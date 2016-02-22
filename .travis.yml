@@ -1,0 +1,25 @@
+sudo: required
+language: clojure
+
+addons:
+  postgresql: "9.3"
+
+services:
+  - postgresql
+
+before_install:
+  - sudo apt-get install graphviz
+  - cd  aipal-db
+
+install:
+  - pip install ansible==1.9.1
+
+before_script:
+  - psql --file=../env/local/db-server/dev.sql 
+
+script:
+ - lein run 'postgresql://aipal_adm:aipal-adm@127.0.0.1:5432/aipal' -u aipal_user --clear -t
+ - cd ../ansible
+ - chmod 600 yhteiset/dev_id_rsa
+ - ssh-add yhteiset/dev_id_rsa
+ - ansible-playbook -i aipal_travis/hosts yhteiset/konfiguroi_tietokanta.yml
