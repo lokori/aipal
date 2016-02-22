@@ -23,3 +23,4 @@ script:
  - chmod 600 yhteiset/dev_id_rsa
  - ssh-add yhteiset/dev_id_rsa
  - ansible-playbook -i aipal_travis/hosts yhteiset/konfiguroi_tietokanta.yml
+
