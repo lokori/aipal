@@ -1,25 +1,32 @@
 sudo: required
 language: clojure
-
 addons:
-  postgresql: "9.3"
-
+  postgresql: '9.3'
 services:
-  - postgresql
-
+- postgresql
 before_install:
-  - sudo apt-get install graphviz
-  - cd aipal-db
-
+- sudo apt-get install graphviz
+- cd aipal-db
 install:
-  - sudo pip install ansible==1.9.1
-
+- sudo pip install ansible==1.9.1
 before_script:
-  - psql --file=../env/local/db-server/dev.sql 
-
+- psql --file=../env/local/db-server/dev.sql
 script:
- - lein run 'postgresql://aipal_adm:aipal-adm@127.0.0.1:5432/aipal' -u aipal_user --clear -t
- - cd ../db-docs
- - generate-schemadocs.sh
+- lein run 'postgresql://aipal_adm:aipal-adm@127.0.0.1:5432/aipal' -u aipal_user --clear
+  -t
+- cd ../aipal
+- lein eastwood
+- cd ../db-docs
+- generate-schemadocs.sh
 
-
+deploy:
+  provider: s3
+  access_key_id: $ARTIFACTS_ID
+  secret_access_key:
+    secure: FPkjIPhWHKESosE6nqTssowT98AB3aQBCOWoQ0aYxWqhKaKUcllX/2xHfilVnwMKsPd8nijEvSDgnnm3F0QbS3+vYkoPGgC1B3ovQjtZt2J8mhcxkDyC3q6A0vvOiXKjmncE0P6orKN3w38/+92rAgrwU4u6g570aD1wnryONjlIJGDZYoc1LJdFG/PWrdTb8WUneJvcRJoRGcmAO0o9FS7jL7Vt7P0UOya74X6IehOxk6PIGWyf+pCnKIr7UmVeaHJ+CxYmwX599Ubq2IMQsCPUqor24X+l57x4Sp2niGQrzVQ4zAZaepfOL/KgdsqYbsrgxkXsk7H+5yrwuS/VaHNECRptQ7nh+xDomzZpGTBR/o2JfW/0mKt1Rub45UxXsMSKW7IoIKsb0MNPQxjJ4K6CNEzjEMIVHe/Gn6oGuxoahnmnh9n/5ankaMRgBRNllyXVv+MBdj8Fu8ZvvEU5T3ahuXQeEcpSfsxZVbQINtUv7gaTlxI8hfuAiv5jpvwdP+wpSE5+Jx0cwTbSFP/xbKFiJTC0vNK90+VnApdD6MiHYDGnzZCHOkKcKQ4DWiYsp1ZeHNVGmC2/+x3eNUJ3/J4aCOS6KCb3qPUMHW4QUxFXhV74nqO0m6jCqO1eTQ2jtXDgzBgpaYcbORcTqrmWXMwW/Zk5+4weKBfmLek/6Rg=
+  bucket: opetushallitus-docs
+  local-dir: schemadocs
+  upload-dir: aipal
+  acl: public_read
+  skip_cleanup: true
+  region: eu-west-1
