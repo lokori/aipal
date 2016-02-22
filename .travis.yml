@@ -9,10 +9,10 @@ services:
 
 before_install:
   - sudo apt-get install graphviz
-  - cd  aipal-db
+  - cd aipal-db
 
 install:
-  - pip install ansible==1.9.1
+  - sudo pip install ansible==1.9.1
 
 before_script:
   - psql --file=../env/local/db-server/dev.sql 
